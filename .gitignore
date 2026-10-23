@@ -1,0 +1,9 @@
+# Build output / local files
+.DS_Store
+Thumbs.db
+*.dmg
+*.zip
+*.tar.gz
+*.AppImage
+*.sha256
+node_modules/

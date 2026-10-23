@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jigsaw — Download for Desktop</title>
+  <meta name="description" content="Download Jigsaw, a calm level-based jigsaw puzzle game for Linux, Windows and macOS.">
+  <meta name="theme-color" content="#0d0b1a">
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <style>
+    :root {
+      --bg: #0d0b1a;
+      --bg-soft: #151228;
+      --card: rgba(255, 255, 255, 0.055);
+      --card-hover: rgba(255, 255, 255, 0.09);
+      --border: rgba(255, 255, 255, 0.11);
+      --text: #f4f1ff;
+      --muted: #a9a2c4;
+      --accent: #8b7bff;
+      --accent-2: #5ce1c2;
+      --gold: #ffcf70;
+      --radius: 18px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(139, 123, 255, 0.22), transparent 34rem),
+        radial-gradient(circle at 88% 20%, rgba(92, 225, 194, 0.13), transparent 30rem),
+        radial-gradient(circle at 50% 110%, rgba(255, 207, 112, 0.09), transparent 38rem),
+        var(--bg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Subtle puzzle-piece pattern */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.16;
+      background-image:
+        radial-gradient(circle at 20% 20%, transparent 11px, rgba(255,255,255,.13) 12px, transparent 13px),
+        radial-gradient(circle at 80% 20%, transparent 11px, rgba(255,255,255,.13) 12px, transparent 13px),
+        radial-gradient(circle at 20% 80%, transparent 11px, rgba(255,255,255,.13) 12px, transparent 13px),
+        radial-gradient(circle at 80% 80%, transparent 11px, rgba(255,255,255,.13) 12px, transparent 13px);
+      background-size: 92px 92px;
+      mask-image: radial-gradient(circle at 50% 35%, black, transparent 62%);
+      -webkit-mask-image: radial-gradient(circle at 50% 35%, black, transparent 62%);
+    }
+
+    .wrap {
+      position: relative;
+      width: min(1060px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 64px 0 48px;
+    }
+
+    header { text-align: center; }
+
+    .logo {
+      width: 118px;
+      height: 118px;
+      border-radius: 30px;
+      box-shadow: 0 18px 48px rgba(139, 123, 255, 0.28);
+      margin-bottom: 22px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: .02em;
+      margin-bottom: 18px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      box-shadow: 0 0 12px var(--accent-2);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.45rem, 6vw, 4.2rem);
+      line-height: 1.04;
+      letter-spacing: -0.045em;
+      font-weight: 800;
+    }
+
+    .gradient {
+      background: linear-gradient(100deg, #fff 10%, #b8adff 48%, #5ce1c2 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .tagline {
+      max-width: 610px;
+      margin: 20px auto 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2.4vw, 1.15rem);
+    }
+
+    .meta {
+      margin-top: 14px;
+      color: #7f7898;
+      font-size: 0.82rem;
+    }
+
+    .downloads {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 42px 0 0;
+    }
+
+    .download {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--text);
+      text-decoration: none;
+      transition: transform .16s ease, background .16s ease, border-color .16s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .download:hover {
+      transform: translateY(-3px);
+      background: var(--card-hover);
+      border-color: rgba(139, 123, 255, 0.55);
+    }
+
+    .download:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; }
+
+    .icon {
+      flex: 0 0 46px;
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: rgba(139, 123, 255, 0.14);
+      color: #c9c1ff;
+    }
+
+    .icon svg { width: 23px; height: 23px; }
+
+    .download strong { display: block; font-size: 1rem; line-height: 1.3; }
+    .download span { display: block; color: var(--muted); font-size: 0.82rem; }
+
+    .arrow {
+      margin-left: auto;
+      color: #7f7898;
+      font-size: 1.2rem;
+      transition: color .16s ease, transform .16s ease;
+    }
+
+    .download:hover .arrow { color: var(--accent-2); transform: translateX(3px); }
+
+    .extras {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px 22px;
+      margin-top: 30px;
+      font-size: 0.9rem;
+    }
+
+    .extras a { color: var(--muted); text-decoration: none; border-bottom: 1px solid transparent; }
+    .extras a:hover { color: var(--text); border-color: var(--accent); }
+
+    .notes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 54px;
+    }
+
+    .note {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .note h2 {
+      margin: 0 0 8px;
+      font-size: 0.82rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .note p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+    .note code { color: #d8d2ff; font-size: 0.82rem; }
+
+    footer {
+      margin-top: 54px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      color: #77718e;
+      font-size: 0.8rem;
+    }
+
+    footer a { color: #a9a2c4; text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 720px) {
+      .wrap { padding-top: 42px; }
+      .downloads { grid-template-columns: 1fr; margin-top: 32px; }
+      .notes { grid-template-columns: 1fr; }
+      .logo { width: 96px; height: 96px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <img class="logo" src="assets/logo.png" alt="Jigsaw logo">
+      <div class="pill"><span class="dot"></span><span id="version">Latest release</span></div>
+      <h1>Jigsaw<br><span class="gradient">for desktop</span></h1>
+      <p class="tagline">
+        A calm, level-based jigsaw puzzle game. Pick a puzzle, settle in, and
+        let the pieces fall into place.
+      </p>
+      <p class="meta" id="released">Linux · Windows · macOS</p>
+    </header>
+
+    <section class="downloads" aria-label="Downloads">
+      <a class="download"
+         href="https://github.com/jinosh05/jigsaw-desktop/releases/latest/download/Jigsaw-linux-x64.tar.gz">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-1.7 0-3 1.3-3 3 0 .4.1.8.2 1.1C6.7 6.7 4.4 9 4.4 12H3v2h2.4c.6 0 1.1.5 1.1 1.1v2.4H4v2h3.5c.8 0 1.5-.7 1.5-1.5v-3c0-.6.5-1.1 1.1-1.1h2.8c.6 0 1.1.5 1.1 1.1v3c0 .8.7 1.5 1.5 1.5H19v-2h-2.5v-2.4c0-.6.5-1.1 1.1-1.1H20v-2h-1.4c0-3-2.3-5.3-4.8-5.9.1-.3.2-.7.2-1.1 0-1.7-1.3-3-3-3zm0 2c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1z"/></svg>
+        </span>
+        <span><strong>Linux</strong><span>x86_64 · tar.gz · GTK 3</span></span>
+        <span class="arrow" aria-hidden="true">↓</span>
+      </a>
+
+      <a class="download"
+         href="https://github.com/jinosh05/jigsaw-desktop/releases/latest/download/Jigsaw-windows-x64.zip">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.7 10.6 4.6v6.7H3V5.7zm0 6.9h7.6v6.8L3 18.2v-5.6zm8.9-8.2L21 3v8.3h-9.1V4.4zm0 8.3H21V21l-9.1-1.4v-6.9z"/></svg>
+        </span>
+        <span><strong>Windows</strong><span>x86_64 · zip · Windows 10+</span></span>
+        <span class="arrow" aria-hidden="true">↓</span>
+      </a>
+
+      <a class="download"
+         href="https://github.com/jinosh05/jigsaw-desktop/releases/latest/download/Jigsaw-macos-arm64.dmg">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.7c0-2 1.6-3 1.7-3.1-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7-1.3 0-2.6.8-3.3 2-1.4 2.4-.4 6 1 8 .7 1 1.5 2 2.5 2 1 0 1.4-.6 2.6-.6 1.2 0 1.5.6 2.6.6 1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3-.1 0-2.2-.8-2.2-3zM14.4 6.4c.5-.6.9-1.5.8-2.4-.8 0-1.8.5-2.4 1.2-.5.6-1 1.5-.8 2.4.9.1 1.8-.5 2.4-1.2z"/></svg>
+        </span>
+        <span><strong>macOS</strong><span>Apple Silicon · dmg · macOS 12+</span></span>
+        <span class="arrow" aria-hidden="true">↓</span>
+      </a>
+
+      <a class="download"
+         href="https://github.com/jinosh05/jigsaw-desktop/releases/latest/download/Jigsaw-macos-x64.dmg">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.7c0-2 1.6-3 1.7-3.1-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7-1.3 0-2.6.8-3.3 2-1.4 2.4-.4 6 1 8 .7 1 1.5 2 2.5 2 1 0 1.4-.6 2.6-.6 1.2 0 1.5.6 2.6.6 1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3-.1 0-2.2-.8-2.2-3zM14.4 6.4c.5-.6.9-1.5.8-2.4-.8 0-1.8.5-2.4 1.2-.5.6-1 1.5-.8 2.4.9.1 1.8-.5 2.4-1.2z"/></svg>
+        </span>
+        <span><strong>macOS Intel</strong><span>Intel · dmg · macOS 12+</span></span>
+        <span class="arrow" aria-hidden="true">↓</span>
+      </a>
+    </section>
+
+    <nav class="extras" aria-label="Release links">
+      <a href="https://github.com/jinosh05/jigsaw-desktop/releases/latest/download/SHA256SUMS.txt">SHA-256 checksums</a>
+      <a href="https://github.com/jinosh05/jigsaw-desktop/releases/latest/download/latest.json">Release manifest</a>
+      <a href="https://github.com/jinosh05/jigsaw-desktop/releases">All releases</a>
+      <a href="https://github.com/jinosh05/jigsaw-desktop#install">Install guide</a>
+    </nav>
+
+    <section class="notes" aria-label="Installation notes">
+      <article class="note">
+        <h2>Linux</h2>
+        <p>Extract the archive and run <code>./jigsaw</code>. Requires GTK 3, libsecret and WebKitGTK 4.1. Install commands are in the README.</p>
+      </article>
+      <article class="note">
+        <h2>Windows</h2>
+        <p>Extract the ZIP, then run <code>jigsaw.exe</code>. SmartScreen may ask for confirmation because the build is not commercially signed.</p>
+      </article>
+      <article class="note">
+        <h2>macOS</h2>
+        <p>Drag Jigsaw into Applications. On first launch, allow it under System Settings → Privacy &amp; Security. Builds are not notarized.</p>
+      </article>
+    </section>
+
+    <footer>
+      <span>© 2026 Jinosh Nadar · Compiled binaries only; source is not distributed.</span>
+      <span>
+        <a href="https://jinosh.site/legal/privacy.html">Privacy</a> ·
+        <a href="https://jinosh.site/legal/terms.html">Terms</a> ·
+        <a href="https://jinosh.site/contact">Support</a>
+      </span>
+    </footer>
+  </main>
+
+  <script>
+    (async function () {
+      try {
+        const response = await fetch('https://api.github.com/repos/jinosh05/jigsaw-desktop/releases/latest', {
+          headers: { Accept: 'application/vnd.github+json' }
+        });
+        if (!response.ok) return;
+        const release = await response.json();
+        const version = document.getElementById('version');
+        const released = document.getElementById('released');
+        if (version && release.tag_name) {
+          version.textContent = release.name || release.tag_name;
+        }
+        if (released && release.published_at) {
+          const date = new Date(release.published_at).toLocaleDateString(undefined, {
+            year: 'numeric', month: 'long', day: 'numeric'
+          });
+          released.textContent = 'Linux · Windows · macOS · released ' + date;
+        }
+      } catch (_) {
+        /* Static download links still work without JavaScript. */
+      }
+    })();
+  </script>
+</body>
+</html>
